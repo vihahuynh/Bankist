@@ -163,7 +163,7 @@ const sectionObserver = new IntersectionObserver(revealSection, {
 
 document.querySelectorAll('.section').forEach(section => {
   sectionObserver.observe(section);
-  section.classList.add('section--hidden');
+  // section.classList.add('section--hidden');
 });
 
 // Lazy loading image
@@ -186,3 +186,43 @@ const imgObserver = new IntersectionObserver(loadImg, {
 });
 
 imgTargets.forEach(img => imgObserver.observe(img));
+
+// Slider
+
+const slider = document.querySelector('.slider');
+const sliders = document.querySelectorAll('.slide');
+
+const btnLeft = document.querySelector('.slider__btn--left');
+const btnRight = document.querySelector('.slider__btn--right');
+
+let curSlide = 0;
+const maxSlide = sliders.length;
+
+// slider.style.transform = 'scale(0.4) translateX(-800px)';
+// slider.style.overflow = 'visible';
+
+const goToSlide = slide => {
+  sliders.forEach((s, i) => {
+    s.style.transform = `translateX(${100 * (i - slide)}%)`;
+  });
+};
+
+goToSlide(0);
+
+btnRight.addEventListener('click', () => {
+  if (curSlide === maxSlide - 1) {
+    curSlide = 0;
+  } else {
+    curSlide++;
+  }
+  goToSlide(curSlide);
+});
+
+btnLeft.addEventListener('click', () => {
+  if (curSlide === 0) {
+    curSlide = maxSlide - 1;
+  } else {
+    curSlide--;
+  }
+  goToSlide(curSlide);
+});
