@@ -153,7 +153,7 @@ const revealSection = (entries, observer) => {
   const [entry] = entries;
   if (!entry.isIntersecting) return;
   entry.target.classList.remove('section--hidden');
-  observer.unobserver(entry.target);
+  observer.unobserve(entry.target);
 };
 
 const sectionObserver = new IntersectionObserver(revealSection, {
@@ -198,8 +198,17 @@ const btnRight = document.querySelector('.slider__btn--right');
 let curSlide = 0;
 const maxSlide = sliders.length;
 
-// slider.style.transform = 'scale(0.4) translateX(-800px)';
-// slider.style.overflow = 'visible';
+const dotsContainer = document.querySelector('.dots');
+
+const activateDot = slide => {
+  document
+    .querySelectorAll('.dots__dot')
+    .forEach(dot => dot.classList.remove('dots__dot--active'));
+
+  document
+    .querySelector(`.dots__dot[data-slide="${slide}"]`)
+    .classList.add('dots__dot--active');
+};
 
 const goToSlide = slide => {
   sliders.forEach((s, i) => {
@@ -207,22 +216,52 @@ const goToSlide = slide => {
   });
 };
 
-goToSlide(0);
-
-btnRight.addEventListener('click', () => {
+const nextSlide = () => {
   if (curSlide === maxSlide - 1) {
     curSlide = 0;
   } else {
     curSlide++;
   }
   goToSlide(curSlide);
-});
+  activateDot(curSlide);
+};
 
-btnLeft.addEventListener('click', () => {
+const prevSlide = () => {
   if (curSlide === 0) {
     curSlide = maxSlide - 1;
   } else {
     curSlide--;
   }
   goToSlide(curSlide);
+  activateDot(curSlide);
+};
+
+btnRight.addEventListener('click', nextSlide);
+
+btnLeft.addEventListener('click', prevSlide);
+
+document.addEventListener('keydown', e => {
+  e.key === 'ArrowLeft' && prevSlide();
+  e.key === 'ArrowRight' && nextSlide();
 });
+
+dotsContainer.addEventListener('click', e => {
+  if (e.target.classList.contains('dots__dot')) {
+    const { slide } = e.target.dataset;
+    goToSlide(slide);
+    activateDot(slide);
+  }
+});
+
+const init = () => {
+  sliders.forEach((_, i) => {
+    dotsContainer.insertAdjacentHTML(
+      'beforeend',
+      `<button class="dots__dot" data-slide="${i}"></button>`
+    );
+  });
+  goToSlide(0);
+  activateDot(0);
+};
+
+init();
